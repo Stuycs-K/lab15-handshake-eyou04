@@ -10,7 +10,21 @@
   returns the file descriptor for the upstream pipe.
   =========================*/
 int server_setup() {
+  printf("Setting Server up\n");
   int from_client = 0;
+  if (mkfifo(WKP, 0666) == -1) {
+    perror("Named Pipe Error");
+    exit(1);
+  }
+  
+  int WKP_error = open(WKP, O_RDWR);
+  if (WKP_error == -1) {
+      perror("wkp open error");
+      exit(1);
+  }
+
+  remove(WKP);
+  printf("Setting Server up done\n");
   return from_client;
 }
 
@@ -25,6 +39,23 @@ int server_setup() {
   =========================*/
 int server_handshake(int *to_client) {
   int from_client;
+
+  int WKP_error = open(WKP, O_RDWR);
+  if (WKP_error == -1) {
+      perror("wkp open error");
+      exit(1);
+  }
+
+  char PP[64];
+  read(WKP, PP, sizeof(PP));
+
+  int PP_error = open(PP, O_RDWR);
+  if (PP_error == -1) {
+    perror("wkp open error");
+    remove(PP);
+    exit(1);
+  }
+
   return from_client;
 }
 
@@ -40,6 +71,28 @@ int server_handshake(int *to_client) {
   =========================*/
 int client_handshake(int *to_server) {
   int from_server;
+  char PP[64]; 
+  sprintf(PP, "%d", getpid())
+  if (mkfifo(PP, 0666) == -1) {
+    perror("Private Pipe Error");
+    exit(1);
+  }
+
+  int WKP_error = open(WKP, O_RDWR);
+  if (WKP_error == -1) {
+    perror("wkp open error");
+    exit(1);
+  }
+
+  write(WKP, PP, sizeof(PP));
+
+  int PP_error = open(PP, O_RDWR);
+  if (PP_error == -1) {
+    perror("wkp open error");
+    remove(PP);
+    exit(1);
+  }
+
   return from_server;
 }
 
