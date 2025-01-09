@@ -72,7 +72,30 @@ int server_handshake(int *to_client) {
   return from_client;
 }
 
+int server_handshake_half(int *to_client, int from_client) {  
+  char client_pipe[BUFFER_SIZE];
+  read(from_client, client_pipe, sizeof(client_pipe));
+  printf("5. Server received SYN: %s\n", client_pipe);
 
+  printf("6. Server opening Private Pipe\n");
+  *(to_client) = open(client_pipe, O_WRONLY);
+  if (*(to_client) == -1) {
+      perror("open client pipe");
+      exit(1);
+  }
+
+  char syn_ack[] = "SYN_ACK";
+  printf("7. Server sending SYN_ACK\n");
+  write(*(to_client), syn_ack, sizeof(syn_ack));
+
+  char ack[BUFFER_SIZE];
+  read(from_client, ack, sizeof(ack));
+  printf("9. Server received ACK: %s\n", ack);
+
+  printf("Handshake complete\n");
+  printf("from_client = %d\n", from_client);
+  return from_client;
+}
 /*=========================
   client_handshake
   args: int * to_server
@@ -83,7 +106,7 @@ int server_handshake(int *to_client) {
   returns the file descriptor for the downstream pipe.
   =========================*/
 int client_handshake(int *to_server) {
-  int from_server;
+    int from_server;
     printf("3. Client creating Private Pipe\n");
     char private_pipe[BUFFER_SIZE];
     snprintf(private_pipe, sizeof(private_pipe), "pipe_%d", getpid());
