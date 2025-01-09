@@ -9,16 +9,19 @@ void sighandler(int signo) {
 }
 
 int main() {
+    printf("In the presistant server\n");
     int to_client;
     int from_client;
-
+    signal(SIGINT, sighandler);
     while (1) {
+        printf("Waiting for a client\n");
         from_client = server_handshake( &to_client );
         printf("Connected to a client \n");
 
         char buffer[BUFFER_SIZE];
-        while (read(from_client, buffer, sizeof(buffer)) > 0) {
-            printf("Received: %s", buffer);
+        int bytes;
+        while (bytes = read(from_client, buffer, sizeof(buffer))) {
+            printf("bytes : %d", bytes);
             write(to_client, buffer, sizeof(buffer));
         }
 
