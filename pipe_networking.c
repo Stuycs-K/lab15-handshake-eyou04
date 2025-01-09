@@ -1,7 +1,7 @@
 #include "pipe_networking.h"
 
-int get_rand(int min, int max){
-    return (rand() % (max - min + 1)) + min;
+int get_rand(){
+    return (rand() % (101));
 }
 
 //UPSTREAM = to the server / from the client

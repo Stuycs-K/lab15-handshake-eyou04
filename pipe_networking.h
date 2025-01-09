@@ -31,6 +31,6 @@ int server_connect(int from_client);
 //for forking server
 int server_setup();
 
-int get_rand(int min, int max);
+int get_rand();
 
 #endif
