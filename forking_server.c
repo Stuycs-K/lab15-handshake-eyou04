@@ -21,7 +21,15 @@ int main() {
         pid_t pid = fork();
         if (pid == 0) {
             //subserver process
-            server_handshake_half(to_client, from_client);
+            server_handshake_half(&to_client, from_client);
+            //printf("check\n");
+            char message[BUFFER_SIZE];
+            while (read(from_client, message, sizeof(message))) {
+                printf("check\n");
+                sleep(1);
+                printf("Subserver message : %s\n", message);
+                write(to_client, message, sizeof(message));
+            }
         } else if (pid > 0) {
             //parent process
             close(from_client);
