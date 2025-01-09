@@ -6,7 +6,8 @@ int main() {
   int from_server;
 
   from_server = client_handshake( &to_server );
-  printf("check\n");
+
+  printf("Sending Message\n");
   char message[] = "HELLO!";
   write(to_server, message, sizeof(message));
 

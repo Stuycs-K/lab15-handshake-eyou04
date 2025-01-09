@@ -25,7 +25,7 @@ int main() {
             //printf("check\n");
             char message[BUFFER_SIZE];
             while (read(from_client, message, sizeof(message))) {
-                printf("check\n");
+                //printf("check\n");
                 sleep(1);
                 printf("Subserver message : %s\n", message);
                 write(to_client, message, sizeof(message));
