@@ -5,9 +5,15 @@ int main() {
   int from_client;
 
   from_client = server_handshake( &to_client );
-  char ack_knw[256];
-  printf("buffer : %s\n", ack_knw);
-  int bytes = read(from_client, ack_knw, sizeof(ack_knw));
-  printf("bytes read : %d\n", bytes);
-  printf("%s\n", ack_knw);
+  printf("from_client = %d\n", from_client);
+  if (from_client > 0) {
+    char buffer[256];
+    int bytes = read(from_client, buffer, sizeof(buffer));
+    if (bytes > 0) {
+        buffer[bytes] = '\0';
+        printf("Server received: %s\n", buffer);
+    } else {
+        printf("No data received or read failed.\n");
+    }
+  }
 }

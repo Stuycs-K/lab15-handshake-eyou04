@@ -21,11 +21,11 @@ int main() {
         char buffer[BUFFER_SIZE];
         int bytes;
         while (bytes = read(from_client, buffer, sizeof(buffer))) {
-            printf("bytes : %d", bytes);
+            printf("bytes read: %d\n", bytes);
             write(to_client, buffer, sizeof(buffer));
         }
 
-        printf("Handshake done!\n");
+        printf("Handshake done!\n\n\n");
         close(from_client);
         close(to_client);
     }

@@ -16,7 +16,7 @@ int get_rand(){
   =========================*/
 int server_setup() {
   printf("1. Server Making Pipe\n");
-  int from_client = 0;
+  int from_client;
   if (mkfifo(WKP, 0666) == -1) {
     perror("Named Pipe Error");
     exit(1);
@@ -32,6 +32,7 @@ int server_setup() {
   printf("4. Server removing WKP\n");
   remove(WKP);
   printf("Setting Server up done\n");
+  printf("from_client = %d\n", from_client);
   return from_client;
 }
 
@@ -67,6 +68,7 @@ int server_handshake(int *to_client) {
   printf("9. Server received ACK: %s\n", ack);
 
   printf("Handshake complete\n");
+  printf("from_client = %d\n", from_client);
   return from_client;
 }
 
@@ -97,14 +99,15 @@ int client_handshake(int *to_server) {
         remove(private_pipe);
         exit(1);
     }
-
+    int client_wkp = *(to_server);
+    
     printf("3. Client writing Private Pipe name to WKP\n");
-    write(*(to_server), private_pipe, sizeof(private_pipe));
+    write(client_wkp, private_pipe, sizeof(private_pipe));
     //close(from_server);
 
     printf("3. Client opening Private Pipe (blocking)\n");
-    int private = open(private_pipe, O_RDONLY);
-    if (private == -1) {
+    from_server = open(private_pipe, O_RDONLY);
+    if (from_server == -1) {
         perror("open private pipe");
         remove(private_pipe);
         exit(1);
@@ -112,16 +115,13 @@ int client_handshake(int *to_server) {
     remove(private_pipe);
 
     char syn_ack[BUFFER_SIZE];
-    read(private, syn_ack, sizeof(syn_ack));
+    read(from_server, syn_ack, sizeof(syn_ack));
     printf("8. Client received SYN_ACK: %s\n", syn_ack);
 
     printf("8. Client sending ACK on WKP\n");
     char ack[] = "ACK";
-    write(*(to_server), ack, sizeof(ack));
-
-    // printf("8. Client deleting Private Pipe\n");
-    // close(private_fd);
-    // close(private_fd_write);
+    write(client_wkp, ack, sizeof(ack));
+    printf("to_server = %d\n", client_wkp);
     return from_server;
 }
 
